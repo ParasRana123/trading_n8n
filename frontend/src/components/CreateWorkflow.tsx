@@ -1,27 +1,37 @@
 import { useState, useCallback } from 'react';
 import { ReactFlow, applyNodeChanges, applyEdgeChanges, addEdge } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
- 
-const initialNodes = [
-  { id: 'n1', position: { x: 0, y: 0 }, data: { label: 'Node 1' } },
-  { id: 'n2', position: { x: 0, y: 100 }, data: { label: 'Node 2' } },
-];
-const initialEdges = [{ id: 'n1-n2', source: 'n1', target: 'n2' }];
+
+export type NodeKind = "price-trigger" | "timer-trigger" | "hyperliquid" | "backpack" | "ligher";
+
+interface NodeType {
+    data: {
+        type: "action" | "trigger",
+        kind: NodeKind
+    },
+    id: string , position: {x: number , y: number},
+};
+
+interface Edge {
+    id: string,
+    source: string,
+    target: string,
+};
  
 export function CreateWorkflow() {
-  const [nodes, setNodes] = useState(initialNodes);
-  const [edges, setEdges] = useState(initialEdges);
+  const [nodes, setNodes] = useState<NodeType[]>([]);
+  const [edges, setEdges] = useState<Edge[]>([]);
  
   const onNodesChange = useCallback(
-    (changes) => setNodes((nodesSnapshot) => applyNodeChanges(changes, nodesSnapshot)),
+    (changes: any) => setNodes((nodesSnapshot) => applyNodeChanges(changes, nodesSnapshot)),
     [],
   );
   const onEdgesChange = useCallback(
-    (changes) => setEdges((edgesSnapshot) => applyEdgeChanges(changes, edgesSnapshot)),
+    (changes: any) => setEdges((edgesSnapshot) => applyEdgeChanges(changes, edgesSnapshot)),
     [],
   );
   const onConnect = useCallback(
-    (params) => setEdges((edgesSnapshot) => addEdge(params, edgesSnapshot)),
+    (params: any) => setEdges((edgesSnapshot) => addEdge(params, edgesSnapshot)),
     [],
   );
  
