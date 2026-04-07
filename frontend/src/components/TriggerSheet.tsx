@@ -24,11 +24,11 @@ import { useState } from "react";
 import type { NodeMetadata } from "./CreateWorkflow";
 
 const SUPPORTED_TRIGGERS = [{
-    id: "timer",
+    id: "timer-trigger",
     title: "Timer",
     description: "Run this trgger every x second/minutes",
 } , {
-    id : "price",
+    id : "price-trigger",
     title: "price-trigger",
     description: "Run this trigger when the price of an asset goes above/below a certain number for an asset",
 }]
@@ -48,14 +48,14 @@ export const TriggerSheet = ({
             Choose a trigger type to add to your workflow.
           </SheetDescription>
         </SheetHeader>
-        <Select value={selectTrigger}>
+        <Select value={selectTrigger} onValueChange={(value) => setSelectTrigger(value)}>
       <SelectTrigger className="w-full">
         <SelectValue placeholder="Select a fruit" />
       </SelectTrigger>
       <SelectContent>
         <SelectGroup>
           {SUPPORTED_TRIGGERS.map(({id , title}) => <>
-          <SelectItem key={id} onSelect={() => setSelectTrigger(id)} value={id}>{title}</SelectItem>
+          <SelectItem key={id} value={id}>{title}</SelectItem>
           {/* <SelectLabel>{description}</SelectLabel> */}
           </>)}
         </SelectGroup>
