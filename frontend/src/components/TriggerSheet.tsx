@@ -22,6 +22,9 @@ import {
 } from "@/components/ui/select"
 import { useState } from "react";
 import type { NodeMetadata } from "./CreateWorkflow";
+import type { PriceTriggerMetadata } from "@/nodes/triggers/PriceTrigger";
+import type { TimerNodeMetadata } from "@/nodes/triggers/Timers";
+import { Input } from "./ui/input";
 
 const SUPPORTED_TRIGGERS = [{
     id: "timer-trigger",
@@ -33,12 +36,20 @@ const SUPPORTED_TRIGGERS = [{
     description: "Run this trigger when the price of an asset goes above/below a certain number for an asset",
 }]
 
+const SUPPORTED_ASSETS = [
+  { id: "SOL" },
+  { id: "BTC" },
+  { id: "ETH" },
+];
+
 export const TriggerSheet = ({
     onSelect,
 }: {
     onSelect: (args: { kind: NodeKind; metadata: NodeMetadata }) => void;
 }) => {
-    const [metadata, setMetadata] = useState({});
+    const [metadata, setMetadata] = useState<PriceTriggerMetadata | TimerNodeMetadata>({
+        time: 3600,
+    });
     const [selectTrigger, setSelectTrigger] = useState(SUPPORTED_TRIGGERS[0].id);
     return <Sheet open={true}>
       <SheetContent>
@@ -50,7 +61,7 @@ export const TriggerSheet = ({
         </SheetHeader>
         <Select value={selectTrigger} onValueChange={(value) => setSelectTrigger(value)}>
       <SelectTrigger className="w-full">
-        <SelectValue placeholder="Select a fruit" />
+        <SelectValue placeholder="Select a trigger" />
       </SelectTrigger>
       <SelectContent>
         <SelectGroup>
@@ -61,6 +72,38 @@ export const TriggerSheet = ({
         </SelectGroup>
       </SelectContent>
     </Select>
+    {selectTrigger == "timer-trigger" && <div>
+      <div className="pt-4">
+        Number of seconds after which to run the timer:
+      </div>
+      <Input value={metadata.time} onChange={(e) => setMetadata(metadata => ({
+        ...metadata,
+        time: Number(e.target.value),
+      }))}></Input>
+    </div> }
+    {selectTrigger == "price-trigger" && <div>
+      Price:
+      <Input type="text" onChange={(e) => setMetadata(m => ({
+        ...m,
+        price: Number(e.target.value),
+      }))}></Input>
+      <Select value={metadata.asset} onValueChange={(value) => setMetadata(metadata => ({
+        ...metadata,
+        asset: value,
+      }))}>
+       <SelectTrigger className="w-full">
+        <SelectValue placeholder="Select an asset" />
+       </SelectTrigger>
+      <SelectContent>
+        <SelectGroup>
+          {SUPPORTED_ASSETS.map(({id}) => <>
+          <SelectItem key={id} value={id}>{id}</SelectItem>
+          {/* <SelectLabel>{description}</SelectLabel> */}
+          </>)}
+        </SelectGroup>
+       </SelectContent>
+      </Select>
+    </div> }
         <SheetFooter>
           <Button onClick={() => {
             onSelect({
